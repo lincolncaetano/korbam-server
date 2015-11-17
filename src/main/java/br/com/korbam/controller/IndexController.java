@@ -12,7 +12,7 @@ public class IndexController {
 	@Inject 
 	private Result result;
 	
-	@Get("/index")
+	@Get("/")
     public void home() {
         result.include("mensagem", "Olá, VRaptor 4!");
     }
