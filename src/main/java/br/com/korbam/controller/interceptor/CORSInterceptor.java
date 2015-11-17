@@ -1,4 +1,4 @@
-package br.com.projeto.controller.interceptor;
+package br.com.korbam.controller.interceptor;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;

@@ -15,7 +15,7 @@
 				<include>*</include>
 			</includes>
 			<excludes>
-				<exclude>br.com.caelum:projeto</exclude>
+				<exclude>br.com.caelum:korbam</exclude>
 			</excludes>
 		</dependencySet>
 	</dependencySets>

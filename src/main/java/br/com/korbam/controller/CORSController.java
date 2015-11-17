@@ -1,4 +1,4 @@
-package br.com.projeto.controller;
+package br.com.korbam.controller;
 
 import java.util.Set;
 
