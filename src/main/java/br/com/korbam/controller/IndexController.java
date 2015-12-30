@@ -40,4 +40,17 @@ public class IndexController {
 		
     }
 	
+	@Post("/cadastrarUsuario")
+    @Consumes(value="application/json")
+	public void cadastrarUsuario(Usuario usr) {
+		
+		try {
+			usuarioDao.adiciona(usr);
+			result.use(Results.json()).withoutRoot().from("true").serialize();
+		} catch (Exception e) {
+			result.use(Results.json()).withoutRoot().from("false").serialize();
+		}
+		
+    }
+	
 }

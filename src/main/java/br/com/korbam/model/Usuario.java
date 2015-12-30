@@ -51,9 +51,10 @@ public class Usuario implements Serializable{
 	@Column(name="ESTADO", length=2)
 	private String estado;
 	
-	@Column(name="cidade", length=50)
+	@Column(name="CIDADE", length=50)
 	private String cidade;
 	
+	@Column(name="SENHA", length=50)
 	private String password;
 	
 	private String foto;
