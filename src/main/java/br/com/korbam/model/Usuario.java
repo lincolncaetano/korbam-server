@@ -4,11 +4,16 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
+@Entity
+@Table(name = "usuario")
 public class Usuario implements Serializable{
 	
 
@@ -57,6 +62,10 @@ public class Usuario implements Serializable{
 	@Column(name="SENHA", length=50)
 	private String password;
 	
+	@Column(name="TOKEN", length=5)
+	private String token;
+	
+	@Transient
 	private String foto;
 
 	public Long getId() {
@@ -169,6 +178,15 @@ public class Usuario implements Serializable{
 
 	public void setFoto(String foto) {
 		this.foto = foto;
+	}
+	
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	@Override

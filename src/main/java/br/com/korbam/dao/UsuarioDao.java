@@ -33,6 +33,10 @@ public class UsuarioDao {
 	
 	public Usuario pesquisaUsuarioPorEmail(Usuario usuario) {
 		return (Usuario) createCriteria().add(Restrictions.like("email", usuario.getEmail())).uniqueResult();
+	}
+	
+	public Usuario pesquisaUsuarioPorUsername(Usuario usuario) {
+		return (Usuario) createCriteria().add(Restrictions.like("username", usuario.getUsername())).uniqueResult();
 	 }
 	
 	public Usuario pesquisaUsuarioPorId(Usuario usuario) {
