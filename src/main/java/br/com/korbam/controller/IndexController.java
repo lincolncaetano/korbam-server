@@ -46,11 +46,33 @@ public class IndexController {
 		
 
 		Usuario usuario = usuarioDao.pesquisaUsuarioPorUserName(usr);
-		if(usuario != null){
-			result.use(Results.json()).withoutRoot().from(usuario).serialize();
-		}else{
-			result.use(Results.json()).withoutRoot().from("false").serialize();
+		
+		String s= usr.getPassword();
+		MessageDigest m;
+		
+		System.out.println(usr.getUsername());
+		System.out.println(usr.getPassword());
+		
+		try {
+			m = MessageDigest.getInstance("MD5");
+			m.update(s.getBytes(),0,s.length());
+			String passwordCpt = new BigInteger(1,m.digest()).toString(16)+"";
+			
+			if(usuario != null && usuario.getPassword().equals(passwordCpt)){
+				result.use(Results.json()).withoutRoot().from(usuario).serialize();
+			}else{
+				result.use(Results.json()).withoutRoot().from(false).serialize();
+			}
+		
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		
+		
+		
+		
 		
     }
 	
