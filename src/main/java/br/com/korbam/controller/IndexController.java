@@ -188,6 +188,15 @@ public class IndexController {
 		}
 	}
 	
+	@Get
+    @Path("/pesquisaUsuario/{userName}")
+	public void listaPostagem(String userName) {
+    	
+    	List<Usuario> lista = usuarioDao.pesquisaUsuarioPorUserName(userName);
+    	result.use(Results.json()).withoutRoot().from(lista).serialize();
+    	
+    }
+
 
 	
 }
