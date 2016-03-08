@@ -69,11 +69,6 @@ public class IndexController {
 			e.printStackTrace();
 		}
 		
-		
-		
-		
-		
-		
     }
 	
 	@Get("/pesquisa")
@@ -194,6 +189,15 @@ public class IndexController {
     	
     	List<Usuario> lista = usuarioDao.pesquisaUsuarioPorUserName(userName);
     	result.use(Results.json()).withoutRoot().from(lista).serialize();
+    	
+    }
+	
+	@Get
+    @Path("/pesquisaUsuarioPorId/{usr.id}")
+	public void pesquisaUsuarioPorId(Usuario usr) {
+    	
+    	Usuario usuario = usuarioDao.pesquisaUsuarioPorId(usr);
+    	result.use(Results.json()).withoutRoot().from(usuario).serialize();
     	
     }
 
