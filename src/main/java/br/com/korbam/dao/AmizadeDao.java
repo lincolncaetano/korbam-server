@@ -7,7 +7,6 @@ import javax.inject.Inject;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 import br.com.korbam.model.Amizade;
 
@@ -29,6 +28,10 @@ public class AmizadeDao {
 	
 	public void adiciona(Amizade amizade) {
 		 session.saveOrUpdate(amizade);
+	 }
+	
+	public void delete(Amizade amizade) {
+		 session.delete(amizade);
 	 }
    
 }
