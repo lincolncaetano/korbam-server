@@ -146,11 +146,22 @@ public class IndexController {
 		
 		Usuario usrToken = usuarioDao.pesquisaUsuarioPorEmail(usr);
 		if(usrToken.getToken().equals(usr.getToken())){
-
-			usrToken.setPassword(usr.getPassword());
-			usrToken.setToken("");
-			usuarioDao.adiciona(usrToken);
-			result.use(Results.json()).withoutRoot().from(true).serialize();
+			
+			try {
+				String s= usr.getPassword();
+				MessageDigest m=MessageDigest.getInstance("MD5");
+				m.update(s.getBytes(),0,s.length());
+				
+				String passwordCpt = new BigInteger(1,m.digest()).toString(16)+"";
+				usr.setPassword(passwordCpt);
+	
+				usrToken.setPassword(passwordCpt);
+				usrToken.setToken("");
+				usuarioDao.adiciona(usrToken);
+				result.use(Results.json()).withoutRoot().from(true).serialize();
+			} catch (Exception e) {
+				result.use(Results.json()).withoutRoot().from("false").serialize();
+			}
 			
 		}else{
 			result.use(Results.json()).withoutRoot().from(false).serialize();

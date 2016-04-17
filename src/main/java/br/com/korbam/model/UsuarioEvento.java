@@ -9,33 +9,31 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
 
-
 @Entity
-@Table(name = "amizade")
-public class Amizade  implements Serializable{
+@Table(name = "usuario_has_evento")
+public class UsuarioEvento implements Serializable{
 
-	private static final long serialVersionUID = 3670795334917459867L;
 
+	private static final long serialVersionUID = -4610816972671115337L;
+	
 	@EmbeddedId 
-	private AmizadeId id;
+	private UsuarioEventoId id;
 	
 	@MapsId("idUsuario")
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID_USUARIO")
+    @JoinColumn(name="Usuario_ID_USUARIO", referencedColumnName="ID_USUARIO")
 	@ManyToOne 
 	private Usuario usuario;
 	
-	@MapsId("idUsuarioSolicitato")
-    @JoinColumn(name="ID_USUARIO_SOLICITADO", referencedColumnName="ID_USUARIO")
+	@MapsId("idEvento")
+    @JoinColumn(name="Evento_ID_EVENTO", referencedColumnName="ID_EVENTO")
 	@ManyToOne 
-	private Usuario usuarioSolicitado;
-	
-	private String status;
+	private Evento evento;
 
-	public AmizadeId getId() {
+	public UsuarioEventoId getId() {
 		return id;
 	}
 
-	public void setId(AmizadeId id) {
+	public void setId(UsuarioEventoId id) {
 		this.id = id;
 	}
 
@@ -47,20 +45,12 @@ public class Amizade  implements Serializable{
 		this.usuario = usuario;
 	}
 
-	public Usuario getUsuarioSolicitado() {
-		return usuarioSolicitado;
+	public Evento getEvento() {
+		return evento;
 	}
 
-	public void setUsuarioSolicitado(Usuario usuarioSolicitado) {
-		this.usuarioSolicitado = usuarioSolicitado;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
+	public void setEvento(Evento evento) {
+		this.evento = evento;
 	}
 
 	@Override
@@ -79,7 +69,7 @@ public class Amizade  implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Amizade other = (Amizade) obj;
+		UsuarioEvento other = (UsuarioEvento) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -89,8 +79,6 @@ public class Amizade  implements Serializable{
 	}
 	
 	
-	
-	
-	
-	
+
 }
+

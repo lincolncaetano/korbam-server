@@ -9,33 +9,30 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
 
-
 @Entity
-@Table(name = "amizade")
-public class Amizade  implements Serializable{
+@Table(name = "grupo_has_usuario")
+public class GrupoUsuario  implements Serializable{
 
-	private static final long serialVersionUID = 3670795334917459867L;
-
+	private static final long serialVersionUID = -7563739561494481142L;
+	
 	@EmbeddedId 
-	private AmizadeId id;
+	private GrupoUsuarioId id;
 	
 	@MapsId("idUsuario")
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID_USUARIO")
+    @JoinColumn(name="Usuario_ID_USUARIO", referencedColumnName="ID_USUARIO")
 	@ManyToOne 
 	private Usuario usuario;
 	
-	@MapsId("idUsuarioSolicitato")
-    @JoinColumn(name="ID_USUARIO_SOLICITADO", referencedColumnName="ID_USUARIO")
+	@MapsId("idGrupo")
+    @JoinColumn(name="Grupo_idGrupo", referencedColumnName="idGrupo")
 	@ManyToOne 
-	private Usuario usuarioSolicitado;
-	
-	private String status;
+	private Grupo grupo;
 
-	public AmizadeId getId() {
+	public GrupoUsuarioId getId() {
 		return id;
 	}
 
-	public void setId(AmizadeId id) {
+	public void setId(GrupoUsuarioId id) {
 		this.id = id;
 	}
 
@@ -47,20 +44,12 @@ public class Amizade  implements Serializable{
 		this.usuario = usuario;
 	}
 
-	public Usuario getUsuarioSolicitado() {
-		return usuarioSolicitado;
+	public Grupo getGrupo() {
+		return grupo;
 	}
 
-	public void setUsuarioSolicitado(Usuario usuarioSolicitado) {
-		this.usuarioSolicitado = usuarioSolicitado;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
+	public void setGrupo(Grupo grupo) {
+		this.grupo = grupo;
 	}
 
 	@Override
@@ -79,7 +68,7 @@ public class Amizade  implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Amizade other = (Amizade) obj;
+		GrupoUsuario other = (GrupoUsuario) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -89,8 +78,5 @@ public class Amizade  implements Serializable{
 	}
 	
 	
-	
-	
-	
-	
+
 }

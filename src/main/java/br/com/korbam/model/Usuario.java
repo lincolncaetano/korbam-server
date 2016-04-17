@@ -2,11 +2,13 @@ package br.com.korbam.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -65,6 +67,27 @@ public class Usuario implements Serializable{
 	@Column(name="TOKEN", length=5)
 	private String token;
 	
+	
+	@OneToMany(mappedBy="id.idUsuario")
+    private List<Amizade> listaAmigos;
+	
+	public Usuario() {
+		super();
+	}
+	
+	public Usuario(Long id) {
+		super();
+		this.id = id;
+	}
+	
+	public List<Amizade> getListaAmigos() {
+		return listaAmigos;
+	}
+
+	public void setListaAmigos(List<Amizade> listaSeguindo) {
+		this.listaAmigos = listaSeguindo;
+	}
+
 	@Transient
 	private String foto;
 
