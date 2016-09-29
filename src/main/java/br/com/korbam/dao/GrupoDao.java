@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 import br.com.korbam.model.Grupo;
 
@@ -32,5 +33,14 @@ public class GrupoDao {
 	public void delete(Grupo grupo) {
 		 session.delete(grupo);
 	 }
-
+	
+	@SuppressWarnings("unchecked")
+	public List<Grupo> pesquisaGruposPorIdUsuario(Long idUsuario) {
+		return (List<Grupo>) createCriteria().add(Restrictions.eq("usuario.id", idUsuario)).list();
+	}
+	
+	public Grupo pesquisaGrupoPorId(Long idGrupo) {
+		return (Grupo) createCriteria().add(Restrictions.eq("id", idGrupo)).uniqueResult();
+	}
+	
 }

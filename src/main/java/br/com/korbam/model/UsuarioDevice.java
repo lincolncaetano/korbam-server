@@ -3,41 +3,39 @@ package br.com.korbam.model;
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "usuario_has_evento")
-public class UsuarioEvento implements Serializable{
+@Table(name = "usuario_device")
+public class UsuarioDevice implements Serializable{
 
-
-	private static final long serialVersionUID = -4610816972671115337L;
+	private static final long serialVersionUID = 3208370127517635003L;
 	
-	@EmbeddedId 
-	private UsuarioEventoId id;
+	@Id
+	@GeneratedValue
+	@Column(name="ID_USUARIO_DEVICE")
+	private Long id;
 	
-	@MapsId("idUsuario")
-    @JoinColumn(name="Usuario_ID_USUARIO", referencedColumnName="ID_USUARIO")
-	@ManyToOne 
+	@ManyToOne
+    @JoinColumn(name = "ID_USUARIO")  
 	private Usuario usuario;
-	
-	@MapsId("idEvento")
-    @JoinColumn(name="Evento_ID_EVENTO", referencedColumnName="ID_EVENTO")
-	@ManyToOne 
-	private Evento evento;
-	
-	@Column(name="STATUS", length=1)
-	private String status;
 
-	public UsuarioEventoId getId() {
+	@Column(name="TOKEN_DEVICE", length=300)
+	private String tokenDevice;
+
+	@Column(name="TIPO_DEVICE", length=1)
+	private String tipoDevice;
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(UsuarioEventoId id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -49,20 +47,20 @@ public class UsuarioEvento implements Serializable{
 		this.usuario = usuario;
 	}
 
-	public Evento getEvento() {
-		return evento;
+	public String getTokenDevice() {
+		return tokenDevice;
 	}
 
-	public void setEvento(Evento evento) {
-		this.evento = evento;
+	public void setTokenDevice(String tokenDevice) {
+		this.tokenDevice = tokenDevice;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getTipoDevice() {
+		return tipoDevice;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setTipoDevice(String tipoDevice) {
+		this.tipoDevice = tipoDevice;
 	}
 
 	@Override
@@ -81,7 +79,7 @@ public class UsuarioEvento implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UsuarioEvento other = (UsuarioEvento) obj;
+		UsuarioDevice other = (UsuarioDevice) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -90,7 +88,4 @@ public class UsuarioEvento implements Serializable{
 		return true;
 	}
 	
-	
-
 }
-

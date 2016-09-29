@@ -44,11 +44,17 @@ public class Evento implements Serializable{
 	private String dtInicioString;
 	
 	@Transient
-	private List<Usuario> listaUsuario;
+	private List<UsuarioEvento> listaUsuario;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="DATA_TERMINO")
 	private Date dtTermino;
+	
+	@Column(name = "HORAINICIO",length=5, nullable = false)
+    private String hrInicial;
+	
+	@Column(name = "HORAFINAL",length=5, nullable = false)
+    private String hrFinal;
 	
 	@Column(name="LATITUDE")
 	private Double latitude;
@@ -70,6 +76,12 @@ public class Evento implements Serializable{
 	
 	@Column(name="TIPO", length=15)
 	private String tipo;
+	
+	@Column(name="LEMBRETE1", length=15)
+	private String lembrete1;
+	
+	@Column(name="LEMBRETE2", length=15)
+	private String lembrete2;
 
 	public Long getId() {
 		return id;
@@ -176,12 +188,44 @@ public class Evento implements Serializable{
 		this.usuario = usuario;
 	}
 
-	public List<Usuario> getListaUsuario() {
+	public List<UsuarioEvento> getListaUsuario() {
 		return listaUsuario;
 	}
 
-	public void setListaUsuario(List<Usuario> listaUsuario) {
+	public void setListaUsuario(List<UsuarioEvento> listaUsuario) {
 		this.listaUsuario = listaUsuario;
+	}
+	
+	public String getHrInicial() {
+		return hrInicial;
+	}
+
+	public void setHrInicial(String hrInicial) {
+		this.hrInicial = hrInicial;
+	}
+	
+	public String getHrFinal() {
+		return hrFinal;
+	}
+
+	public void setHrFinal(String hrfinal) {
+		this.hrFinal = hrfinal;
+	}
+
+	public String getLembrete1() {
+		return lembrete1;
+	}
+
+	public void setLembrete1(String lembrete1) {
+		this.lembrete1 = lembrete1;
+	}
+
+	public String getLembrete2() {
+		return lembrete2;
+	}
+
+	public void setLembrete2(String lembrete2) {
+		this.lembrete2 = lembrete2;
 	}
 
 	@Override

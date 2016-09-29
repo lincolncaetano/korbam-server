@@ -1,12 +1,16 @@
 package br.com.korbam.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "grupo")
@@ -16,11 +20,21 @@ public class Grupo  implements Serializable{
 	
 	@Id
 	@GeneratedValue
-	@Column(name="idGrupo")
+	@Column(name="ID_GRUPO")
 	private Long id;
 	
-	@Column(name="nome", length=100)
+	@ManyToOne
+    @JoinColumn(name = "ID_USUARIO_CAD")  
+	private Usuario usuario;
+	
+	@Column(name="NOME", length=45)
 	private String nome;
+	
+	@Column(name="DESCRICAO", length=45)
+	private String descricao;
+	
+	@Transient
+	private List<Usuario> listaUsuario;
 
 	public Long getId() {
 		return id;
@@ -36,6 +50,30 @@ public class Grupo  implements Serializable{
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
+	public List<Usuario> getListaUsuario() {
+		return listaUsuario;
+	}
+
+	public void setListaUsuario(List<Usuario> listaUsuario) {
+		this.listaUsuario = listaUsuario;
+	}
+	
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 
 	@Override

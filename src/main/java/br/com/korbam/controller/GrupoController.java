@@ -1,25 +1,24 @@
 package br.com.korbam.controller;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Controller;
+import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
-import br.com.korbam.dao.AmizadeDao;
-import br.com.korbam.dao.EventoDao;
 import br.com.korbam.dao.GrupoDao;
 import br.com.korbam.dao.GrupoUsuarioDao;
-import br.com.korbam.dao.UsuarioEventoDao;
-import br.com.korbam.model.Amizade;
-import br.com.korbam.model.Evento;
 import br.com.korbam.model.Grupo;
 import br.com.korbam.model.GrupoUsuario;
+import br.com.korbam.model.GrupoUsuarioId;
 import br.com.korbam.model.Usuario;
-import br.com.korbam.model.UsuarioEvento;
 
 
 
@@ -41,6 +40,16 @@ public class GrupoController {
 		
 		try{
 			grupoDao.adiciona(grupo);
+			
+			if(!grupo.getListaUsuario().isEmpty()){
+				for (Usuario usr : grupo.getListaUsuario()) {
+					GrupoUsuario gu = new GrupoUsuario(new GrupoUsuarioId(usr.getId(), grupo.getId()));
+					gu.setGrupo(grupo);
+					gu.setUsuario(usr);
+					grupoUsuarioDao.adiciona(gu);
+				}
+			}
+			
 			result.use(Results.json()).withoutRoot().from(true).serialize();
 		}catch(Exception e){
 			result.use(Results.json()).withoutRoot().from(false).serialize();
@@ -61,6 +70,48 @@ public class GrupoController {
 			e.printStackTrace();
 		}
 	
+    }
+	
+	@Get("/pesquisaGrupoPorUsuario/{idUsuario}")
+	public void pesquisaEventoPorUsuario(Long idUsuario) {
+		
+		List<Grupo> lista = new ArrayList<>();
+		List<GrupoUsuario> listaGrupoUsuario = grupoUsuarioDao.listaGruposPorIdUsuario(idUsuario);
+		for (GrupoUsuario grupoUsuario : listaGrupoUsuario) {
+			lista.add(grupoUsuario.getGrupo());
+		}
+		
+		List<Grupo> listaGrupo= grupoDao.pesquisaGruposPorIdUsuario(idUsuario);
+		lista.addAll(listaGrupo);
+		
+		if(!lista.isEmpty()){
+			result.use(Results.json()).withoutRoot().from(lista).serialize();
+		}else{
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+		}
+		
+    }
+	
+	@Get("/pesquisaGrupoPorId/{idGrupo}")
+	public void pesquisaGrupoPorId(Long idGrupo) {
+		
+
+		Grupo grupo = grupoDao.pesquisaGrupoPorId(idGrupo);
+	
+		if(grupo!= null){
+			
+			List<Usuario> listaUsuario = new ArrayList<>();
+			listaUsuario.add(grupo.getUsuario());
+			List<GrupoUsuario> listaGrupoUsuario = grupoUsuarioDao.listaGruposPorIdGrupo(idGrupo);
+			for (GrupoUsuario grupoUsuario : listaGrupoUsuario) {
+				listaUsuario.add(grupoUsuario.getUsuario());
+			}
+			grupo.setListaUsuario(listaUsuario);
+			
+			result.use(Results.json()).withoutRoot().from(grupo).include("listaUsuario").include("usuario").serialize();
+		}else{
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+		}
     }
 
 }

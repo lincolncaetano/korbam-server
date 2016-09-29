@@ -10,7 +10,6 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import br.com.korbam.model.Evento;
-import br.com.korbam.model.Usuario;
 
 @RequestScoped
 public class EventoDao {
@@ -35,8 +34,14 @@ public class EventoDao {
 		 session.delete(evento);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Evento> pesquisaEventoPorIdUsuario(Long idUsuario) {
 		return (List<Evento>) createCriteria().add(Restrictions.eq("usuario.id", idUsuario)).list();
+	}
+	
+
+	public Evento pesquisaEventoPorId(Long id) {
+		return (Evento) createCriteria().add(Restrictions.eq("id", id)).uniqueResult();
 	}
 
 }

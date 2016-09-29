@@ -1,9 +1,11 @@
 package br.com.korbam.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
@@ -20,6 +22,10 @@ import br.com.korbam.dao.UsuarioDao;
 import br.com.korbam.model.Usuario;
 
 import java.security.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.*;
 
 @Controller
@@ -33,7 +39,7 @@ public class IndexController {
 	
 	@Get("/")
     public void home() {
-        result.include("mensagem", "Olá, VRaptor 4!");
+		result.use(Results.json()).withoutRoot().from("servidorOK").serialize();
     }
 
 	@Inject
@@ -49,9 +55,6 @@ public class IndexController {
 		
 		String s= usr.getPassword();
 		MessageDigest m;
-		
-		System.out.println(usr.getUsername());
-		System.out.println(usr.getPassword());
 		
 		try {
 			m = MessageDigest.getInstance("MD5");
@@ -79,7 +82,7 @@ public class IndexController {
 		if(lista != null){
 			result.use(Results.json()).withoutRoot().from(lista).serialize();
 		}else{
-			result.use(Results.json()).withoutRoot().from("false").serialize();
+			result.use(Results.json()).withoutRoot().from(false).serialize();
 		}
 		
     }
@@ -99,11 +102,51 @@ public class IndexController {
 			
 			
 			usuarioDao.adiciona(usr);
-			result.use(Results.json()).withoutRoot().from("true").serialize();
+			result.use(Results.json()).withoutRoot().from(true).serialize();
 		} catch (Exception e) {
-			result.use(Results.json()).withoutRoot().from("false").serialize();
+			result.use(Results.json()).withoutRoot().from(false).serialize();
 		}
 		
+    }
+	
+	@Post("/editarUsuario")
+	@Consumes(value="application/json")
+	public void editarUsuario(Usuario usr) {
+
+		try {
+			
+			if(usr.getFotoProfileBase64() != null && !usr.getFotoProfileBase64().isEmpty()){
+				String url = "/home/risidev/appservers/apache-tomcat-8x/webapps/profile";
+				//String url = "/Users/lincolncaetano/korbam/profile";
+				gravaImage(url, usr.getFotoProfileBase64(),usr.getUsername().toLowerCase());
+				usr.setFotoProfile("http://www.risidevelop.com.br/profile/"+usr.getUsername().toLowerCase()+".png");
+				
+			}
+			
+			if(usr.getDataNascimentoString() != null && !usr.getDataNascimentoString().isEmpty()){
+				DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+				Date date = (Date)formatter.parse(usr.getDataNascimentoString());
+				usr.setDataNascimento(date);
+			}
+			
+			usuarioDao.adiciona(usr);
+			
+			result.use(Results.json()).withoutRoot().from(true).serialize();
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+		}
+		
+    }
+	
+   private void gravaImage(String path, String arquivo, String nomeArq) throws IOException{
+    	
+    	byte[] imageByteArray = Base64.decodeBase64(arquivo);
+    	FileOutputStream imageOutFile = new FileOutputStream(
+    			path+"/"+nomeArq+".png");
+
+        imageOutFile.write(imageByteArray);
+        imageOutFile.close();
     }
 	
 	@Post("/enviarToken")
@@ -160,7 +203,7 @@ public class IndexController {
 				usuarioDao.adiciona(usrToken);
 				result.use(Results.json()).withoutRoot().from(true).serialize();
 			} catch (Exception e) {
-				result.use(Results.json()).withoutRoot().from("false").serialize();
+				result.use(Results.json()).withoutRoot().from(false).serialize();
 			}
 			
 		}else{
@@ -211,7 +254,6 @@ public class IndexController {
     	result.use(Results.json()).withoutRoot().from(usuario).serialize();
     	
     }
-
-
+	
 	
 }

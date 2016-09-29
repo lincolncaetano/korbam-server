@@ -19,12 +19,12 @@ public class GrupoUsuario  implements Serializable{
 	private GrupoUsuarioId id;
 	
 	@MapsId("idUsuario")
-    @JoinColumn(name="Usuario_ID_USUARIO", referencedColumnName="ID_USUARIO")
+    @JoinColumn(name="ID_USUARIO_GRUPO", referencedColumnName="ID_USUARIO")
 	@ManyToOne 
 	private Usuario usuario;
 	
 	@MapsId("idGrupo")
-    @JoinColumn(name="Grupo_idGrupo", referencedColumnName="idGrupo")
+    @JoinColumn(name="ID_GRUPO_USUARIO", referencedColumnName="ID_GRUPO")
 	@ManyToOne 
 	private Grupo grupo;
 
@@ -75,6 +75,15 @@ public class GrupoUsuario  implements Serializable{
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	public GrupoUsuario(GrupoUsuarioId id) {
+		super();
+		this.id = id;
+	}
+	
+	public GrupoUsuario() {
+		super();
 	}
 	
 	

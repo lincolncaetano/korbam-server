@@ -38,13 +38,24 @@ public class Usuario implements Serializable{
 	@Column(name="SEXO", length=12)
 	private String sexo;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	@Column(name="DATA_NASCIMENTO")
 	private Date dataNascimento;
+	
+	@Transient
+	private String dataNascimentoString;
+	
+	@Column(name="FOTO_PROFILE", length=400)
+	private String fotoProfile;
+	
+	@Transient
+	private String fotoProfileBase64;
 	
 	@Column(name="ESTADO_CIVIL", length=15)
 	private String estadoCivil;
 	
+	@Column(name="TELEFONE_CELULAR", length=45)
+	private String celular;
 	
 	@Column(name="EMAIL", length=100)
 	private String email;
@@ -87,9 +98,6 @@ public class Usuario implements Serializable{
 	public void setListaAmigos(List<Amizade> listaSeguindo) {
 		this.listaAmigos = listaSeguindo;
 	}
-
-	@Transient
-	private String foto;
 
 	public Long getId() {
 		return id;
@@ -194,14 +202,6 @@ public class Usuario implements Serializable{
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	public String getFoto() {
-		return foto;
-	}
-
-	public void setFoto(String foto) {
-		this.foto = foto;
-	}
 	
 
 	public String getToken() {
@@ -210,6 +210,38 @@ public class Usuario implements Serializable{
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	public String getDataNascimentoString() {
+		return dataNascimentoString;
+	}
+
+	public void setDataNascimentoString(String dataNascimentoString) {
+		this.dataNascimentoString = dataNascimentoString;
+	}
+
+	public String getCelular() {
+		return celular;
+	}
+
+	public void setCelular(String celular) {
+		this.celular = celular;
+	}
+
+	public String getFotoProfile() {
+		return fotoProfile;
+	}
+
+	public void setFotoProfile(String fotoProfile) {
+		this.fotoProfile = fotoProfile;
+	}
+
+	public String getFotoProfileBase64() {
+		return fotoProfileBase64;
+	}
+
+	public void setFotoProfileBase64(String fotoProfileBase64) {
+		this.fotoProfileBase64 = fotoProfileBase64;
 	}
 
 	@Override
@@ -240,13 +272,11 @@ public class Usuario implements Serializable{
 	@Override
 	public String toString() {
 		return "Usuario [id=" + id + ", username=" + username + ", nome=" + nome + ", ultimoNome=" + ultimoNome
-				+ ", sexo=" + sexo + ", dataNascimento=" + dataNascimento + ", estadoCivil=" + estadoCivil + ", email="
-				+ email + ", emailAlternativo=" + emailAlternativo + ", pais=" + pais + ", estado=" + estado
-				+ ", cidade=" + cidade + ", password=" + password + ", foto=" + foto + "]";
+				+ ", sexo=" + sexo + ", dataNascimento=" + dataNascimento + ", fotoProfile=" + fotoProfile
+				+ ", estadoCivil=" + estadoCivil + ", celular=" + celular + ", email=" + email + ", emailAlternativo="
+				+ emailAlternativo + ", pais=" + pais + ", estado=" + estado + ", cidade=" + cidade + ", password="
+				+ password + ", token=" + token + ", listaAmigos=" + listaAmigos + "]";
 	}
 
-	
-	
-	
 
 }
