@@ -6,6 +6,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -33,6 +34,12 @@ public class UsuarioEventoDao {
 	
 	public void delete(UsuarioEvento usuarioEvento) {
 		session.delete(usuarioEvento);
+	}
+	
+	public void deletePorEvento(Long idEvento) {
+		Query query = session.createQuery("delete UsuarioEvento where id.idEvento = :ID");
+		query.setParameter("ID", idEvento); 
+		query.executeUpdate();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -68,6 +75,13 @@ public class UsuarioEventoDao {
 		return (List<UsuarioEvento>) createCriteria()
 				.add(Restrictions.eq("id.idEvento", idEvento))
 				.list();
+	}
+	
+	public UsuarioEvento pesquisaUsuarioEventoPorId(Long idEvento, Long idUsuario) {
+		return (UsuarioEvento) createCriteria()
+				.add(Restrictions.eq("id.idUsuario", idUsuario))
+				.add(Restrictions.eq("id.idEvento", idEvento))
+				.uniqueResult();
 	}
 
 

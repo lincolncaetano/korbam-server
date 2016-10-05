@@ -19,10 +19,13 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 import br.com.korbam.dao.EventoDao;
+import br.com.korbam.dao.GrupoEventoDao;
 import br.com.korbam.dao.NotificacaoDao;
 import br.com.korbam.dao.UsuarioDeviceDao;
 import br.com.korbam.dao.UsuarioEventoDao;
 import br.com.korbam.model.Evento;
+import br.com.korbam.model.GrupoEvento;
+import br.com.korbam.model.GrupoEventoId;
 import br.com.korbam.model.Notificacao;
 import br.com.korbam.model.Usuario;
 import br.com.korbam.model.UsuarioDevice;
@@ -49,66 +52,75 @@ public class EventoController {
 	@Inject
 	private UsuarioDeviceDao usuarioDeviceDao;
 	
+	@Inject
+	private GrupoEventoDao grupoEventoDao;
+	
 	@Post("/salvarEvento")
 	@Consumes(value="application/json")
 	public void salvarEvento(Evento evento) {
 		
 		try{
 			
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			Date date = (Date)formatter.parse(evento.getDtInicioString());
-			
-			evento.setDtInicio(date);
-			evento.setDescricao("teste");
-			
-			eventoDao.adiciona(evento);
-			
-			UsuarioEvento usuarioEventoAdmin = new UsuarioEvento();
-			usuarioEventoAdmin.setId(new UsuarioEventoId(evento.getUsuario().getId(), evento.getId()));
-			usuarioEventoAdmin.setUsuario(evento.getUsuario());
-			usuarioEventoAdmin.setEvento(evento);
-			usuarioEventoAdmin.setStatus("A");
-			usuarioEventoDao.adiciona(usuarioEventoAdmin);
-
-			
-			//ligar aos usuario convidados
-			for (UsuarioEvento usrEvento : evento.getListaUsuario()) {
-				
-				usrEvento.setId(new UsuarioEventoId(usrEvento.getUsuario().getId(), evento.getId()));
-				usrEvento.setEvento(evento);
-				usuarioEventoDao.adiciona(usrEvento);
-				
-				Notificacao notificacao = new Notificacao(usrEvento);
-				notificacao.setMensagem("Evento");
-				notificacaoDao.adiciona(notificacao);
-				
-				List<UsuarioDevice> listaUsuarioDevice = usuarioDeviceDao.pesquisaUsuarioPorIdUsuario(usrEvento.getUsuario().getId());
-				for (UsuarioDevice usuarioDevice : listaUsuarioDevice) {
-					String msg = evento.getUsuario().getUsername()+" te convidou para participar do evento "+evento.getTitulo();
-					
-					if(usuarioDevice.getTipoDevice().equals("I")){
-						EnviaNotificacaoIOS enviaNotIOS = new EnviaNotificacaoIOS(msg, usuarioDevice.getTokenDevice());
-						Thread threadNot = new Thread(enviaNotIOS);
-						threadNot.start();	
-					}else{
-						EnviaNotificacaoAndroid enviaNot = new EnviaNotificacaoAndroid(msg, usuarioDevice.getTokenDevice());
-						Thread threadNot = new Thread(enviaNot);
-						threadNot.start();
-					}
-				}
-				
-			}
-			
-
+			prepararEvento(evento);
 			result.use(Results.json()).withoutRoot().from(evento).serialize();
 		}catch(Exception e){
 			result.use(Results.json()).withoutRoot().from(false).serialize();
 			e.printStackTrace();
 		}
-		
-		
-	
     }
+	
+	private void prepararEvento(Evento evento){
+		
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date date;
+		try {
+			date = (Date)formatter.parse(evento.getDtInicioString());
+			evento.setDtInicio(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		eventoDao.adiciona(evento);
+		
+		UsuarioEvento usuarioEventoAdmin = new UsuarioEvento();
+		usuarioEventoAdmin.setId(new UsuarioEventoId(evento.getUsuario().getId(), evento.getId()));
+		usuarioEventoAdmin.setUsuario(evento.getUsuario());
+		usuarioEventoAdmin.setEvento(evento);
+		usuarioEventoAdmin.setStatus("A");
+		usuarioEventoDao.adiciona(usuarioEventoAdmin);
+
+		
+		//ligar aos usuario convidados
+		for (UsuarioEvento usrEvento : evento.getListaUsuario()) {
+			
+			usrEvento.setId(new UsuarioEventoId(usrEvento.getUsuario().getId(), evento.getId()));
+			usrEvento.setEvento(evento);
+			usuarioEventoDao.adiciona(usrEvento);
+			
+			Notificacao notificacao = new Notificacao(usrEvento);
+			notificacao.setMensagem("Evento");
+			notificacaoDao.adiciona(notificacao);
+			
+			List<UsuarioDevice> listaUsuarioDevice = usuarioDeviceDao.pesquisaUsuarioPorIdUsuario(usrEvento.getUsuario().getId());
+			for (UsuarioDevice usuarioDevice : listaUsuarioDevice) {
+				String msg = evento.getUsuario().getUsername()+" te convidou para participar do evento "+evento.getTitulo();
+				
+				if(usuarioDevice.getTipoDevice().equals("I")){
+					EnviaNotificacaoIOS enviaNotIOS = new EnviaNotificacaoIOS(msg, usuarioDevice.getTokenDevice());
+					Thread threadNot = new Thread(enviaNotIOS);
+					threadNot.start();	
+				}else{
+					EnviaNotificacaoAndroid enviaNot = new EnviaNotificacaoAndroid(msg, usuarioDevice.getTokenDevice());
+					Thread threadNot = new Thread(enviaNot);
+					threadNot.start();
+				}
+			}
+			
+		}
+	}
 	
 	@Post("/salvarUsuarioEvento")
 	@Consumes(value="application/json")
@@ -276,6 +288,77 @@ public class EventoController {
 			result.use(Results.json()).withoutRoot().from(false).serialize();
 		}
 		
+	}
+	
+	@Delete("/detelaEvento/{idEvento}")
+	@Consumes(value="application/json")
+	public void detelaEvento(Long idEvento) {
+		
+		try {
+			notificacaoDao.deletePorEvento(idEvento);
+			usuarioEventoDao.deletePorEvento(idEvento);
+			grupoEventoDao.deletePorEvento(idEvento);
+			
+			Evento ev = new Evento();
+			ev.setId(idEvento);
+			eventoDao.delete(ev);
+			result.use(Results.json()).withoutRoot().from(true).serialize();
+		} catch (Exception e) {
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+		}
+		
+	}
+	
+	
+	@Post("/salvarGrupoEvento")
+	@Consumes(value="application/json")
+	public void salvarGrupoEvento(GrupoEvento grupoEvento) {
+		try{
+			
+			
+			List<UsuarioEvento> listaUsuarioEvento = new ArrayList<UsuarioEvento>();
+			
+			for (Usuario usuario : grupoEvento.getGrupo().getListaUsuario()) {
+				if(!grupoEvento.getEvento().getUsuario().getId().equals(usuario.getId())){
+					UsuarioEvento userEvento = new UsuarioEvento();
+					userEvento.setUsuario(usuario);
+					userEvento.setStatus("P");
+					listaUsuarioEvento.add(userEvento);
+				}
+			}
+			
+			grupoEvento.getEvento().setListaUsuario(listaUsuarioEvento);
+			prepararEvento(grupoEvento.getEvento());
+			
+			GrupoEventoId id = new GrupoEventoId(grupoEvento.getGrupo().getId(), grupoEvento.getEvento().getId());
+			grupoEvento.setId(id);
+			
+			grupoEventoDao.adiciona(grupoEvento);
+			
+			result.use(Results.json()).withoutRoot().from(true).serialize();
+		}catch(Exception e){
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+			e.printStackTrace();
+		}
+	
+    }
+	
+	@Get("/pesquisaUsuarioEventoPorId/{idUsuario}/{idEvento}")
+	public void pesquisaUsuarioEventoPorId(Long idUsuario, Long idEvento) {
+		try{
+			UsuarioEvento usuarioEvento = usuarioEventoDao.pesquisaUsuarioEventoPorId(idEvento, idUsuario);
+			if(usuarioEvento != null){
+				result.use(Results.json()).withoutRoot().from(usuarioEvento)
+				.include("usuario")
+				.include("evento").include("evento.usuario")
+				.serialize();
+			}else{
+				result.use(Results.json()).withoutRoot().from(true).serialize();
+			}
+		}catch(Exception e){
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+			e.printStackTrace();
+		}
 	}
 
 }

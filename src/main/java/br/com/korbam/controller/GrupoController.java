@@ -14,8 +14,11 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 import br.com.korbam.dao.GrupoDao;
+import br.com.korbam.dao.GrupoEventoDao;
 import br.com.korbam.dao.GrupoUsuarioDao;
+import br.com.korbam.model.Evento;
 import br.com.korbam.model.Grupo;
+import br.com.korbam.model.GrupoEvento;
 import br.com.korbam.model.GrupoUsuario;
 import br.com.korbam.model.GrupoUsuarioId;
 import br.com.korbam.model.Usuario;
@@ -33,6 +36,9 @@ public class GrupoController {
 	
 	@Inject
     private GrupoUsuarioDao grupoUsuarioDao;
+	
+	@Inject
+    private GrupoEventoDao grupoEventoDao;
 	
 	@Post("/salvarGrupo")
 	@Consumes(value="application/json")
@@ -108,7 +114,17 @@ public class GrupoController {
 			}
 			grupo.setListaUsuario(listaUsuario);
 			
-			result.use(Results.json()).withoutRoot().from(grupo).include("listaUsuario").include("usuario").serialize();
+			List<Evento> listaEventos = new ArrayList<>();
+			List<GrupoEvento> listaGrupoEvento = grupoEventoDao.listaEventosPorIdGrupo(idGrupo);
+			for (GrupoEvento grupoEvento : listaGrupoEvento) {
+				listaEventos.add(grupoEvento.getEvento());
+			}
+			grupo.setListaEvento(listaEventos);
+			
+			result.use(Results.json()).withoutRoot().from(grupo).include("listaUsuario")
+			.include("listaEvento")
+			.include("listaEvento.usuario")
+			.include("usuario").serialize();
 		}else{
 			result.use(Results.json()).withoutRoot().from(false).serialize();
 		}

@@ -31,7 +31,7 @@ public class EventoDao {
 	 }
 	
 	public void delete(Evento evento) {
-		 session.delete(evento);
+		session.delete(evento);
 	}
 	
 	@SuppressWarnings("unchecked")

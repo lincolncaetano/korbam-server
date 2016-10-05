@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Controller;
+import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
@@ -30,8 +31,17 @@ public class UsuarioDeviceController {
 	public void cadastrarTokenDevice(UsuarioDevice userDevice) {
 
 		try {
+			List<UsuarioDevice> listaUsuarioDevice = usuarioDeviceDao.pesquisaUsuarioPorToken(userDevice.getTokenDevice());
+	    	if(!listaUsuarioDevice.isEmpty()){
+	    		for (UsuarioDevice usuarioDevice : listaUsuarioDevice) {
+					if(usuarioDevice.getUsuario().getId() == userDevice.getUsuario().getId()){
+						userDevice.setId(usuarioDevice.getId());
+					}
+				}
+	    	}
+			
 			usuarioDeviceDao.adiciona(userDevice);
-			result.use(Results.json()).withoutRoot().from(true).serialize();
+			result.use(Results.json()).withoutRoot().from(userDevice).serialize();
 		} catch (Exception e) {
 			result.use(Results.json()).withoutRoot().from(false).serialize();
 		}
@@ -52,6 +62,19 @@ public class UsuarioDeviceController {
 		}
   	
     }
+	
+	@Delete("/detelaPorToken/{token}")
+	@Consumes(value="application/json")
+	public void detelaPorToken(String token) {
+		
+		try {
+			usuarioDeviceDao.deletePorToken(token);
+			result.use(Results.json()).withoutRoot().from(true).serialize();
+		} catch (Exception e) {
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+		}
+		
+	}
 	
 	
 }

@@ -118,8 +118,10 @@ public class IndexController {
 			if(usr.getFotoProfileBase64() != null && !usr.getFotoProfileBase64().isEmpty()){
 				String url = "/home/risidev/appservers/apache-tomcat-8x/webapps/profile";
 				//String url = "/Users/lincolncaetano/korbam/profile";
-				gravaImage(url, usr.getFotoProfileBase64(),usr.getUsername().toLowerCase());
-				usr.setFotoProfile("http://www.risidevelop.com.br/profile/"+usr.getUsername().toLowerCase()+".png");
+				String nomeArquivo = usr.getUsername().toLowerCase()+System.currentTimeMillis()+"";
+				
+				gravaImage(url, usr.getFotoProfileBase64(),nomeArquivo);
+				usr.setFotoProfile("http://www.risidevelop.com.br/profile/"+nomeArquivo+".png");
 				
 			}
 			

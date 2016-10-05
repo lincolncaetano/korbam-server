@@ -4,10 +4,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-
+import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
+import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 import br.com.korbam.dao.NotificacaoDao;
@@ -40,6 +41,17 @@ public class NotificacaoController {
 		}
     	
     }
+	
+	@Post("/atualizaNotificacao")
+    @Consumes(value="application/json")
+	public void atualizaNotificacao(List<Notificacao> listaNotif){
+		for (Notificacao notificacao : listaNotif) {
+			notificacao.setStatus("A");
+			notificacaoDao.adiciona(notificacao);
+		}
+		
+		result.use(Results.json()).withoutRoot().from(false).serialize();
+	}
 	
 	
 }

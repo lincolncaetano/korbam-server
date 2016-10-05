@@ -35,6 +35,9 @@ public class Grupo  implements Serializable{
 	
 	@Transient
 	private List<Usuario> listaUsuario;
+	
+	@Transient
+	private List<Evento> listaEvento ;
 
 	public Long getId() {
 		return id;
@@ -74,6 +77,16 @@ public class Grupo  implements Serializable{
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+	
+	
+
+	public List<Evento> getListaEvento() {
+		return listaEvento;
+	}
+
+	public void setListaEvento(List<Evento> listaEvento) {
+		this.listaEvento = listaEvento;
 	}
 
 	@Override

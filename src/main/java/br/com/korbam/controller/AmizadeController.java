@@ -50,17 +50,25 @@ public class AmizadeController {
 		amizadeDao.adiciona(amz);
 		
 		Notificacao notificacao = new Notificacao(amz);
-		notificacao.setMensagem("Amizade Solicitada");
+		String msg = "";
+		if(amz.getStatus().equals("P")){
+			msg = "Amizade Solicitada";
+			notificacao.setMensagem(msg);
+		}else if(amz.getStatus().equals("A")){
+			msg = "Aceitou seu pedido de amizade";
+			notificacao.setMensagem("Aceitou seu pedido de amizade");
+		}
+		
 		notificacaoDao.adiciona(notificacao);
 		
 		List<UsuarioDevice> listaUsuarioDevice = usuarioDeviceDao.pesquisaUsuarioPorIdUsuario(amz.getId().getIdUsuarioSolicitato());
 		for (UsuarioDevice usuarioDevice : listaUsuarioDevice) {
 			if(usuarioDevice.getTipoDevice().equals("I")){
-				EnviaNotificacaoIOS enviaNotIOS = new EnviaNotificacaoIOS("Amizade Solicitada", usuarioDevice.getTokenDevice());
+				EnviaNotificacaoIOS enviaNotIOS = new EnviaNotificacaoIOS(msg, usuarioDevice.getTokenDevice());
 				Thread threadNot = new Thread(enviaNotIOS);
 				threadNot.start();	
 			}else{
-				EnviaNotificacaoAndroid enviaNot = new EnviaNotificacaoAndroid("Amizade Solicitada", usuarioDevice.getTokenDevice());
+				EnviaNotificacaoAndroid enviaNot = new EnviaNotificacaoAndroid(msg, usuarioDevice.getTokenDevice());
 				Thread threadNot = new Thread(enviaNot);
 				threadNot.start();
 			}
