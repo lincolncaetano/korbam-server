@@ -18,11 +18,13 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
+import br.com.korbam.dao.ChecklistDao;
 import br.com.korbam.dao.EventoDao;
 import br.com.korbam.dao.GrupoEventoDao;
 import br.com.korbam.dao.NotificacaoDao;
 import br.com.korbam.dao.UsuarioDeviceDao;
 import br.com.korbam.dao.UsuarioEventoDao;
+import br.com.korbam.model.Checklist;
 import br.com.korbam.model.Evento;
 import br.com.korbam.model.GrupoEvento;
 import br.com.korbam.model.GrupoEventoId;
@@ -54,6 +56,9 @@ public class EventoController {
 	
 	@Inject
 	private GrupoEventoDao grupoEventoDao;
+	
+	@Inject
+	private ChecklistDao checklistDao;
 	
 	@Post("/salvarEvento")
 	@Consumes(value="application/json")
@@ -94,32 +99,37 @@ public class EventoController {
 
 		
 		//ligar aos usuario convidados
-		for (UsuarioEvento usrEvento : evento.getListaUsuario()) {
-			
-			usrEvento.setId(new UsuarioEventoId(usrEvento.getUsuario().getId(), evento.getId()));
-			usrEvento.setEvento(evento);
-			usuarioEventoDao.adiciona(usrEvento);
-			
-			Notificacao notificacao = new Notificacao(usrEvento);
-			notificacao.setMensagem("Evento");
-			notificacaoDao.adiciona(notificacao);
-			
-			List<UsuarioDevice> listaUsuarioDevice = usuarioDeviceDao.pesquisaUsuarioPorIdUsuario(usrEvento.getUsuario().getId());
-			for (UsuarioDevice usuarioDevice : listaUsuarioDevice) {
-				String msg = evento.getUsuario().getUsername()+" te convidou para participar do evento "+evento.getTitulo();
+		
+		if(evento.getListaUsuario() != null && !evento.getListaUsuario().isEmpty()){
+			for (UsuarioEvento usrEvento : evento.getListaUsuario()) {
 				
-				if(usuarioDevice.getTipoDevice().equals("I")){
-					EnviaNotificacaoIOS enviaNotIOS = new EnviaNotificacaoIOS(msg, usuarioDevice.getTokenDevice());
-					Thread threadNot = new Thread(enviaNotIOS);
-					threadNot.start();	
-				}else{
-					EnviaNotificacaoAndroid enviaNot = new EnviaNotificacaoAndroid(msg, usuarioDevice.getTokenDevice());
-					Thread threadNot = new Thread(enviaNot);
-					threadNot.start();
+				usrEvento.setId(new UsuarioEventoId(usrEvento.getUsuario().getId(), evento.getId()));
+				usrEvento.setEvento(evento);
+				usuarioEventoDao.adiciona(usrEvento);
+				
+				Notificacao notificacao = new Notificacao(usrEvento);
+				notificacao.setMensagem("Evento");
+				notificacaoDao.adiciona(notificacao);
+				
+				List<UsuarioDevice> listaUsuarioDevice = usuarioDeviceDao.pesquisaUsuarioPorIdUsuario(usrEvento.getUsuario().getId());
+				for (UsuarioDevice usuarioDevice : listaUsuarioDevice) {
+					String msg = evento.getUsuario().getUsername()+" te convidou para participar do evento "+evento.getTitulo();
+					
+					if(usuarioDevice.getTipoDevice().equals("I")){
+						EnviaNotificacaoIOS enviaNotIOS = new EnviaNotificacaoIOS(msg, usuarioDevice.getTokenDevice());
+						Thread threadNot = new Thread(enviaNotIOS);
+						threadNot.start();	
+					}else{
+						EnviaNotificacaoAndroid enviaNot = new EnviaNotificacaoAndroid(msg, usuarioDevice.getTokenDevice());
+						Thread threadNot = new Thread(enviaNot);
+						threadNot.start();
+					}
 				}
+				
 			}
-			
 		}
+		
+		
 	}
 	
 	@Post("/salvarUsuarioEvento")
@@ -146,7 +156,7 @@ public class EventoController {
 				}
 			}
 			
-			result.use(Results.json()).withoutRoot().from(true).serialize();
+			result.use(Results.json()).withoutRoot().from(usuarioEvento).include("usuario").serialize();
 		}catch(Exception e){
 			result.use(Results.json()).withoutRoot().from(false).serialize();
 			e.printStackTrace();
@@ -240,14 +250,10 @@ public class EventoController {
 	public void buscaListaUsuarioPorEvento(Long idEvento) {
 		
 		try {
-			List<Usuario> listaRetorno = new ArrayList<Usuario>();
 			List<UsuarioEvento> lista = usuarioEventoDao.buscaListaUsuarioPorEvento(idEvento);
-			for (UsuarioEvento usuarioEvento : lista) {
-				listaRetorno.add(usuarioEvento.getUsuario());
-			}
 					
-			if(!listaRetorno.isEmpty()){
-				result.use(Results.json()).withoutRoot().from(listaRetorno).serialize();
+			if(!lista.isEmpty()){
+				result.use(Results.json()).withoutRoot().from(lista).include("usuario").serialize();
 			}else{
 				result.use(Results.json()).withoutRoot().from(false).serialize();
 			}
@@ -355,6 +361,44 @@ public class EventoController {
 			}else{
 				result.use(Results.json()).withoutRoot().from(true).serialize();
 			}
+		}catch(Exception e){
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+			e.printStackTrace();
+		}
+	}
+	
+	@Post("/salvarChecklist")
+	@Consumes(value="application/json")
+	public void salvarCheckList(Checklist check) {
+		try{		
+			checklistDao.adiciona(check);
+			result.use(Results.json()).withoutRoot().from(check).serialize();
+		}catch(Exception e){
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+			e.printStackTrace();
+		}
+    }
+	
+	@Delete("/detelaChecklist/{idChecklist}")
+	@Consumes(value="application/json")
+	public void detelaChecklist(Long idChecklist) {
+		
+		try {
+			Checklist checklist = new Checklist();
+			checklist.setId(idChecklist);
+			checklistDao.delete(checklist);
+			result.use(Results.json()).withoutRoot().from(true).serialize();
+		} catch (Exception e) {
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+		}
+		
+	}
+	
+	@Get("/pesquisaCheckListPorEvento/{idEvento}")
+	public void pesquisaCheckListPorEvento(Long idEvento) {
+		try{
+			List<Checklist> listaRetorno = checklistDao.pesquisaChecklistPorEvento(idEvento);
+			result.use(Results.json()).withoutRoot().from(listaRetorno).serialize();
 		}catch(Exception e){
 			result.use(Results.json()).withoutRoot().from(false).serialize();
 			e.printStackTrace();

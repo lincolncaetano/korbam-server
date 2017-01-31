@@ -5,28 +5,17 @@
 <hibernate-configuration>
  
     <session-factory>
-        <property name="connection.url">jdbc:mysql://localhost/risidev_korbam?autoReconnectForPools=true</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306/mydb</property>
         <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="connection.username">risidev_root</property>
-        <property name="connection.password">Jesus1</property>
+        <property name="connection.username">root</property>
+        <property name="connection.password"></property>
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
  
-        <property name="show_sql">false</property>
+        <property name="show_sql">true</property>
         <property name="format_sql">true</property>
         <property name="connection.autoReconnect">true</property> 
-		<property name="connection.autoReconnectForPools">true</property> 
-		<property name="connection.is-connection-validation-required">true</property>
+		<property name="connection.autoReconnectForPools">true</property>
 		
-		<property name="hibernate.connection.CharSet">utf8mb4</property>
-		<property name="hibernate.connection.characterEncoding">utf8</property>
-		<property name="hibernate.connection.useUnicode">true</property>	
-		
-		<property name="hibernate.c3p0.min_size">1</property>
-		<property name="hibernate.c3p0.max_size">20</property>
-		<property name="hibernate.c3p0.timeout">0</property>
-		<property name="hibernate.c3p0.max_statements">50</property>
-		<property name="hibernate.c3p0.idle_test_period">100</property>
- 
         <mapping class="br.com.korbam.model.Usuario"/>
         <mapping class="br.com.korbam.model.Amizade"/>
         <mapping class="br.com.korbam.model.Grupo"/>
@@ -35,7 +24,8 @@
         <mapping class="br.com.korbam.model.UsuarioEvento"/>
         <mapping class="br.com.korbam.model.Notificacao"/>
         <mapping class="br.com.korbam.model.UsuarioDevice"/>
- 
+        <mapping class="br.com.korbam.model.Checklist"/>
+
     </session-factory>
  
 </hibernate-configuration>

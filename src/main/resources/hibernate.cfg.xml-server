@@ -35,6 +35,7 @@
         <mapping class="br.com.korbam.model.UsuarioEvento"/>
         <mapping class="br.com.korbam.model.Notificacao"/>
         <mapping class="br.com.korbam.model.UsuarioDevice"/>
+        <mapping class="br.com.korbam.model.Checklist"/>
  
     </session-factory>
  
