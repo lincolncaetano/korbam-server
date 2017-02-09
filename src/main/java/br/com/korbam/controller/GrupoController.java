@@ -15,10 +15,12 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 import br.com.korbam.dao.GrupoDao;
 import br.com.korbam.dao.GrupoEventoDao;
+import br.com.korbam.dao.GrupoTarefaDao;
 import br.com.korbam.dao.GrupoUsuarioDao;
 import br.com.korbam.model.Evento;
 import br.com.korbam.model.Grupo;
 import br.com.korbam.model.GrupoEvento;
+import br.com.korbam.model.GrupoTarefa;
 import br.com.korbam.model.GrupoUsuario;
 import br.com.korbam.model.GrupoUsuarioId;
 import br.com.korbam.model.Usuario;
@@ -39,6 +41,9 @@ public class GrupoController {
 	
 	@Inject
     private GrupoEventoDao grupoEventoDao;
+	
+	@Inject
+	private GrupoTarefaDao grupotarefaDao;
 	
 	@Post("/salvarGrupo")
 	@Consumes(value="application/json")
@@ -128,6 +133,33 @@ public class GrupoController {
 		}else{
 			result.use(Results.json()).withoutRoot().from(false).serialize();
 		}
+    }
+	
+	@Post("/salvarGrupoTarefa")
+	@Consumes(value="application/json")
+	public void salvarGrupoTarefa(GrupoTarefa grupoTarefa) {
+
+		try{
+			grupotarefaDao.adiciona(grupoTarefa);
+			result.use(Results.json()).withoutRoot().from(grupoTarefa).include("usuario").serialize();
+		}catch(Exception e){
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+			e.printStackTrace();
+		}
+	
+    }
+	
+	@Get("/pesquisaGrupoTarefaPorUsuario/{idUsuario}")
+	public void pesquisaGrupoTarefaPorUsuario(Long idUsuario) {
+		
+		List<GrupoTarefa> listaGrupoUsuario = grupotarefaDao.pesquisaGrupoTarefaPorIdUsuario(idUsuario);
+
+		if(!listaGrupoUsuario.isEmpty()){
+			result.use(Results.json()).withoutRoot().from(listaGrupoUsuario).serialize();
+		}else{
+			result.use(Results.json()).withoutRoot().from(false).serialize();
+		}
+		
     }
 
 }

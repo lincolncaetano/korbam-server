@@ -33,6 +33,10 @@ public class Evento implements Serializable{
     @JoinColumn(name = "ID_USUARIO_CAD")  
 	private Usuario usuario;
 	
+	@ManyToOne
+    @JoinColumn(name = "ID_GRUPO_TAREFA")  
+	private GrupoTarefa grupoTarefa;
+	
 	@Column(name="TITULO", length=50)
 	private String titulo;
 	
@@ -226,6 +230,16 @@ public class Evento implements Serializable{
 
 	public void setLembrete2(String lembrete2) {
 		this.lembrete2 = lembrete2;
+	}
+	
+	
+
+	public GrupoTarefa getGrupoTarefa() {
+		return grupoTarefa;
+	}
+
+	public void setGrupoTarefa(GrupoTarefa grupoTarefa) {
+		this.grupoTarefa = grupoTarefa;
 	}
 
 	@Override
