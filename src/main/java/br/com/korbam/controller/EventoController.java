@@ -86,6 +86,10 @@ public class EventoController {
 			e.printStackTrace();
 		}
 		
+		if(evento.getGrupoTarefa() != null && evento.getGrupoTarefa().getId() == 0){
+			evento.setGrupoTarefa(null);
+		}
+		
 		
 		
 		eventoDao.adiciona(evento);
@@ -272,7 +276,7 @@ public class EventoController {
 		List<UsuarioEvento> lista = usuarioEventoDao.buscaTodosUsuarioEventoPorIdUsuario(idUsuario);
 
 		if(!lista.isEmpty()){
-			result.use(Results.json()).withoutRoot().from(lista).include("id").include("usuario").include("evento").include("evento.usuario").serialize();
+			result.use(Results.json()).withoutRoot().from(lista).include("id").include("usuario").include("evento").include("evento.usuario").include("evento.grupoTarefa").serialize();
 		}else{
 			result.use(Results.json()).withoutRoot().from(false).serialize();
 		}
